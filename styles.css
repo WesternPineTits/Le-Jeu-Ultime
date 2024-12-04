@@ -1,3 +1,59 @@
+/* Styles communs pour tous les boutons */
+button {
+    background-color: rgba(45, 45, 45, 0.8) !important;
+    border: none !important;
+    color: white !important;
+    padding: 15px 25px !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    text-align: center;
+}
+
+button:hover {
+    background-color: rgba(60, 60, 60, 0.8) !important;
+    transform: scale(1.05);
+}
+
+/* Exception pour le bouton GO qui garde sa couleur jaune */
+#start-button {
+    background-color: var(--go-button-color) !important;
+    color: black !important;
+}
+
+/* Exception pour le bouton de suppression */
+.management-btn.delete-btn {
+    background-color: var(--delete-button-color) !important;
+}
+
+.management-btn.delete-btn:hover {
+    background-color: var(--delete-button-hover) !important;
+}
+
+/* Animation +1 agrandie */
+.points-animation {
+    position: absolute;
+    color: var(--go-button-color);
+    font-weight: bold;
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+    z-index: 1000;
+    font-size: 5rem !important; /* 5 fois plus grand */
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+/* Reste du CSS inchangé */
 :root {
     --background-color: #000000;
     --text-color: #ffffff;
@@ -100,9 +156,9 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(45, 45, 45, 0.8);
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 1.2rem;
     z-index: 1000;
     display: flex;
@@ -111,30 +167,14 @@ body {
     gap: 10px;
 }
 
-.reset-btn {
-    background-color: var(--delete-button-color);
-    color: var(--text-color);
-    border: none;
-    padding: 5px 15px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.reset-btn:hover {
-    background-color: var(--delete-button-hover);
-    transform: scale(1.05);
-}
-
 .theme-toggle {
     position: fixed;
     top: 20px;
     left: 20px;
-    background-color: var(--button-color);
+    background-color: rgba(45, 45, 45, 0.8) !important;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 8px !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,62 +183,21 @@ body {
     transition: all 0.3s ease;
 }
 
-.theme-toggle:hover {
-    background-color: var(--button-hover-color);
-    transform: scale(1.1);
-}
-
 .theme-panel {
     position: fixed;
     top: 70px;
     left: 20px;
-    background-color: var(--button-color);
+    background-color: rgba(45, 45, 45, 0.8);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 8px;
     z-index: 999;
     width: 300px;
     display: none;
-    transition: all 0.3s ease;
 }
 
 .theme-panel.active {
     display: block;
     animation: fadeIn 0.3s ease;
-}
-
-.theme-panel h3 {
-    margin-bottom: 15px;
-    font-size: 1.2rem;
-}
-
-.theme-section {
-    margin-bottom: 20px;
-}
-
-.theme-section h4 {
-    margin-bottom: 10px;
-    font-size: 1rem;
-}
-
-.theme-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.theme-preset {
-    background-color: var(--button-color);
-    color: var(--text-color);
-    border: none;
-    padding: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.theme-preset:hover {
-    background-color: var(--button-hover-color);
-    transform: scale(1.05);
 }
 
 .container {
@@ -238,28 +237,6 @@ h2 {
     margin-bottom: 2rem;
 }
 
-button {
-    transition: all 0.3s ease;
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-#start-button {
-    background-color: var(--go-button-color);
-    color: black;
-    border: none;
-    padding: 15px 40px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-#start-button:hover {
-    transform: scale(1.05);
-}
-
 .nav-buttons {
     margin-bottom: 2rem;
     display: flex;
@@ -274,77 +251,11 @@ button:active {
     text-align: left;
 }
 
-.management-btn {
-    background-color: var(--button-color);
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    text-align: left;
-}
-
-.management-btn:hover {
-    background-color: var(--button-hover-color);
-}
-
-.management-btn.delete-btn {
-    background-color: var(--delete-button-color);
-}
-
-.management-btn.delete-btn:hover {
-    background-color: var(--delete-button-hover);
-}
-
 .categories {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-top: 2rem;
-}
-
-.category-btn {
-    background-color: var(--button-color);
-    color: var(--text-color);
-    border: none;
-    padding: 20px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    border-radius: 5px;
-    position: relative;
-    overflow: hidden;
-}
-
-.category-btn:hover {
-    background-color: var(--button-hover-color);
-    transform: scale(1.05);
-}
-
-.category-btn.selected {
-    background-color: var(--delete-button-color);
-    border: 2px solid var(--delete-button-hover);
-}
-
-/* Animation +1 */
-.points-animation {
-    position: absolute;
-    color: var(--go-button-color);
-    font-weight: bold;
-    pointer-events: none;
-    animation: floatUp 1s ease-out forwards;
-    z-index: 1000;
-}
-
-@keyframes floatUp {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
 }
 
 /* Effet de clic */
