@@ -12,8 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreValue = document.getElementById('score-value');
     const rewardsContainer = document.querySelector('.rewards-container');
     const categoriesContainer = document.querySelector('.categories');
+
+    // Elements de personnalisation
     const themeButton = document.getElementById('theme-button');
     const themePanel = document.getElementById('theme-panel');
+    const themePresets = document.querySelectorAll('.theme-preset');
+    const colorInputs = {
+        backgroundColor: document.getElementById('backgroundColor'),
+        textColor: document.getElementById('textColor'),
+        buttonColor: document.getElementById('buttonColor'),
+        goButtonColor: document.getElementById('goButtonColor')
+    };
 
     // État initial
     let score = parseInt(localStorage.getItem('gameScore')) || 0;
@@ -23,6 +32,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialisation du score
     scoreValue.textContent = score;
+
+    // Gestion du panneau de personnalisation
+    themeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        themePanel.classList.toggle('active');
+    });
+
+    // Fermer le panneau si on clique en dehors
+    document.addEventListener('click', (e) => {
+        if (!themePanel.contains(e.target) && !themeButton.contains(e.target)) {
+            themePanel.classList.remove('active');
+        }
+    });
+
+    // Gestion des thèmes prédéfinis
+    themePresets.forEach(button => {
+        button.addEventListener('click', () => {
+            const theme = button.dataset.theme;
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('gameTheme', JSON.stringify({ preset: theme }));
+        });
+    });
+
+    // Gestion des couleurs personnalisées
+    Object.entries(colorInputs).forEach(([key, input]) => {
+        input.addEventListener('change', () => {
+            const colors = {
+                backgroundColor: colorInputs.backgroundColor.value,
+                textColor: colorInputs.textColor.value,
+                buttonColor: colorInputs.buttonColor.value,
+                goButtonColor: colorInputs.goButtonColor.value
+            };
+
+            document.documentElement.style.setProperty('--background-color', colors.backgroundColor);
+            document.documentElement.style.setProperty('--text-color', colors.textColor);
+            document.documentElement.style.setProperty('--button-color', colors.buttonColor);
+            document.documentElement.style.setProperty('--go-button-color', colors.goButtonColor);
+
+            localStorage.setItem('gameTheme', JSON.stringify({ custom: colors }));
+        });
+    });
 
     // Navigation
     startButton.addEventListener('click', () => {
@@ -65,19 +115,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirm(`Voulez-vous vraiment supprimer la catégorie "${button.textContent}" ?`)) {
                     button.remove();
                     saveCategories();
+                    if (document.querySelectorAll('.category-btn').length === 0) {
+                        addCategoryButton.style.display = 'block';
+                    }
                 }
             } else {
                 updateScore(parseInt(button.dataset.points) || 1);
             }
         });
     }
-
-    // Ajout des écouteurs d'événements aux catégories existantes
-    document.querySelectorAll('.category-btn').forEach(button => {
-        if (!button.id || button.id !== 'add-category') {
-            addCategoryEventListener(button);
-        }
-    });
 
     // Ajout de catégorie
     addCategoryButton.addEventListener('click', () => {
@@ -88,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (categoryName && categoryName.trim() !== '') {
             const newButton = createCategoryButton(categoryName);
             categoriesContainer.appendChild(newButton);
+            addCategoryButton.style.display = 'none';
             saveCategories();
         }
     });
@@ -119,12 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveCategories() {
         const categories = [];
         document.querySelectorAll('.category-btn').forEach(btn => {
-            if (!btn.id || btn.id !== 'add-category') {
-                categories.push({
-                    name: btn.textContent,
-                    points: btn.dataset.points
-                });
-            }
+            categories.push({
+                name: btn.textContent,
+                points: btn.dataset.points
+            });
         });
         localStorage.setItem('gameCategories', JSON.stringify(categories));
     }
@@ -132,17 +177,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Chargement des catégories
     function loadCategories() {
         const savedCategories = JSON.parse(localStorage.getItem('gameCategories'));
-        if (savedCategories) {
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (!btn.id || btn.id !== 'add-category') {
-                    btn.remove();
-                }
-            });
-            
+        if (savedCategories && savedCategories.length > 0) {
             savedCategories.forEach(category => {
                 const newButton = createCategoryButton(category.name, category.points);
                 categoriesContainer.appendChild(newButton);
             });
+            addCategoryButton.style.display = 'none';
+        } else {
+            addCategoryButton.style.display = 'block';
         }
     }
 
@@ -232,4 +274,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Chargement initial des données
     loadCategories();
     loadRewards();
+
+    // Chargement du thème sauvegardé
+    const savedTheme = JSON.parse(localStorage.getItem('gameTheme'));
+    if (savedTheme) {
+        if (savedTheme.preset) {
+            document.body.setAttribute('data-theme', savedTheme.preset);
+        } else if (savedTheme.custom) {
+            const colors = savedTheme.custom;
+            document.documentElement.style.setProperty('--background-color', colors.backgroundColor);
+            document.documentElement.style.setProperty('--text-color', colors.textColor);
+            document.documentElement.style.setProperty('--button-color', colors.buttonColor);
+            document.documentElement.style.setProperty('--go-button-color', colors.goButtonColor);
+        }
+    }
 });
