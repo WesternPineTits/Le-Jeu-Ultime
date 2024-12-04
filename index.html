@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamification de Vie</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="score-container">
+        <div id="score">Score: <span id="score-value">0</span> points</div>
+    </div>
+
+    <div id="theme-button" class="theme-toggle">
+        <span class="material-icons">⚙️</span>
+    </div>
+
+    <div id="theme-panel" class="theme-panel">
+        <h3>Personnalisation</h3>
+        <div class="theme-section">
+            <h4>Thèmes prédéfinis</h4>
+            <div class="theme-buttons">
+                <button class="theme-preset" data-theme="dark">Sombre</button>
+                <button class="theme-preset" data-theme="light">Clair</button>
+                <button class="theme-preset" data-theme="neon">Néon</button>
+                <button class="theme-preset" data-theme="nature">Nature</button>
+            </div>
+        </div>
+        <div class="theme-section">
+            <h4>Couleurs personnalisées</h4>
+            <div class="color-picker">
+                <label>
+                    Fond
+                    <input type="color" id="backgroundColor" value="#000000">
+                </label>
+                <label>
+                    Texte
+                    <input type="color" id="textColor" value="#ffffff">
+                </label>
+                <label>
+                    Boutons
+                    <input type="color" id="buttonColor" value="#333333">
+                </label>
+                <label>
+                    Bouton GO
+                    <input type="color" id="goButtonColor" value="#ffff00">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="start-screen" class="screen active">
+            <h1>Commence l'aventure</h1>
+            <button id="start-button">GO</button>
+        </div>
+        
+        <div id="categories-screen" class="screen">
+            <div class="nav-buttons">
+                <div class="category-management">
+                    <button id="add-category" class="management-btn">+ Ajouter une catégorie</button>
+                    <button id="delete-category" class="management-btn delete-btn">- Supprimer une catégorie</button>
+                </div>
+                <button id="rewards-button" class="nav-btn">Récompenses</button>
+            </div>
+            <div class="categories">
+                <button class="category-btn" data-points="1">Codage</button>
+                <button class="category-btn" data-points="1">Santé</button>
+                <button class="category-btn" data-points="1">Business</button>
+            </div>
+        </div>
+
+        <div id="rewards-screen" class="screen">
+            <button id="back-to-categories" class="nav-btn">Retour aux catégories</button>
+            <h2>Récompenses</h2>
+            <div class="add-reward-section">
+                <button id="add-reward" class="add-reward-btn">+ Ajouter une récompense</button>
+            </div>
+            <div class="rewards-container">
+                <!-- Les récompenses seront ajoutées ici dynamiquement -->
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
