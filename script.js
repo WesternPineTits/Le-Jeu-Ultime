@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToCategoriesButton = document.getElementById('back-to-categories');
     const addRewardButton = document.getElementById('add-reward');
     const scoreValue = document.getElementById('score-value');
+    const resetButton = document.getElementById('reset-score');
     const rewardsContainer = document.querySelector('.rewards-container');
     const categoriesContainer = document.querySelector('.categories');
 
@@ -33,6 +34,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du score
     scoreValue.textContent = score;
 
+    // Effet de clic sur les boutons
+    function createClickEffect(e, button) {
+        const effect = document.createElement('div');
+        effect.className = 'click-effect';
+        
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        effect.style.left = x + 'px';
+        effect.style.top = y + 'px';
+        
+        button.appendChild(effect);
+        effect.addEventListener('animationend', () => effect.remove());
+    }
+
+    // Animation +1
+    function createPointsAnimation(x, y) {
+        const animation = document.createElement('div');
+        animation.className = 'points-animation';
+        animation.textContent = '+1';
+        animation.style.left = x + 'px';
+        animation.style.top = y + 'px';
+        document.body.appendChild(animation);
+        animation.addEventListener('animationend', () => animation.remove());
+    }
+
+    // Reset score
+    resetButton.addEventListener('click', () => {
+        if (confirm('Voulez-vous vraiment réinitialiser votre score à 0 ?')) {
+            score = 0;
+            scoreValue.textContent = score;
+            localStorage.setItem('gameScore', '0');
+            claimedRewards.clear();
+            localStorage.setItem('gameClaimedRewards', '[]');
+            updateRewardButtons();
+        }
+    });
+
     // Gestion du panneau de personnalisation
     themeButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -46,57 +86,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Gestion des thèmes prédéfinis
-    themePresets.forEach(button => {
-        button.addEventListener('click', () => {
-            const theme = button.dataset.theme;
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('gameTheme', JSON.stringify({ preset: theme }));
-        });
-    });
-
-    // Gestion des couleurs personnalisées
-    Object.entries(colorInputs).forEach(([key, input]) => {
-        input.addEventListener('change', () => {
-            const colors = {
-                backgroundColor: colorInputs.backgroundColor.value,
-                textColor: colorInputs.textColor.value,
-                buttonColor: colorInputs.buttonColor.value,
-                goButtonColor: colorInputs.goButtonColor.value
-            };
-
-            document.documentElement.style.setProperty('--background-color', colors.backgroundColor);
-            document.documentElement.style.setProperty('--text-color', colors.textColor);
-            document.documentElement.style.setProperty('--button-color', colors.buttonColor);
-            document.documentElement.style.setProperty('--go-button-color', colors.goButtonColor);
-
-            localStorage.setItem('gameTheme', JSON.stringify({ custom: colors }));
-        });
-    });
-
     // Navigation
-    startButton.addEventListener('click', () => {
+    startButton.addEventListener('click', (e) => {
+        createClickEffect(e, startButton);
         startScreen.classList.remove('active');
         categoriesScreen.classList.add('active');
     });
 
-    rewardsButton.addEventListener('click', () => {
+    rewardsButton.addEventListener('click', (e) => {
+        createClickEffect(e, rewardsButton);
         categoriesScreen.classList.remove('active');
         rewardsScreen.classList.add('active');
         updateRewardButtons();
     });
 
-    backToCategoriesButton.addEventListener('click', () => {
+    backToCategoriesButton.addEventListener('click', (e) => {
+        createClickEffect(e, backToCategoriesButton);
         rewardsScreen.classList.remove('active');
         categoriesScreen.classList.add('active');
     });
 
     // Gestion du score
-    function updateScore(points) {
+    function updateScore(points, e) {
         score += points;
         scoreValue.textContent = score;
         localStorage.setItem('gameScore', score.toString());
         updateRewardButtons();
+
+        // Animation +1
+        createPointsAnimation(e.clientX, e.clientY);
     }
 
     // Gestion des catégories
@@ -110,23 +128,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addCategoryEventListener(button) {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
             if (deleteMode) {
                 if (confirm(`Voulez-vous vraiment supprimer la catégorie "${button.textContent}" ?`)) {
                     button.remove();
                     saveCategories();
-                    if (document.querySelectorAll('.category-btn').length === 0) {
-                        addCategoryButton.style.display = 'block';
-                    }
                 }
             } else {
-                updateScore(parseInt(button.dataset.points) || 1);
+                createClickEffect(e, button);
+                updateScore(parseInt(button.dataset.points) || 1, e);
             }
         });
     }
 
+    // Ajout des écouteurs d'événements aux catégories existantes
+    document.querySelectorAll('.category-btn').forEach(button => {
+        addCategoryEventListener(button);
+    });
+
     // Ajout de catégorie
-    addCategoryButton.addEventListener('click', () => {
+    addCategoryButton.addEventListener('click', (e) => {
+        createClickEffect(e, addCategoryButton);
         if (deleteMode) {
             exitDeleteMode();
         }
@@ -134,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (categoryName && categoryName.trim() !== '') {
             const newButton = createCategoryButton(categoryName);
             categoriesContainer.appendChild(newButton);
-            addCategoryButton.style.display = 'none';
             saveCategories();
         }
     });
@@ -149,7 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    deleteCategoryButton.addEventListener('click', () => {
+    deleteCategoryButton.addEventListener('click', (e) => {
+        createClickEffect(e, deleteCategoryButton);
         deleteMode = !deleteMode;
         if (deleteMode) {
             deleteCategoryButton.textContent = 'Annuler la suppression';
@@ -178,13 +200,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadCategories() {
         const savedCategories = JSON.parse(localStorage.getItem('gameCategories'));
         if (savedCategories && savedCategories.length > 0) {
+            // Supprimer les catégories par défaut
+            document.querySelectorAll('.category-btn').forEach(btn => btn.remove());
+            
             savedCategories.forEach(category => {
                 const newButton = createCategoryButton(category.name, category.points);
                 categoriesContainer.appendChild(newButton);
             });
-            addCategoryButton.style.display = 'none';
-        } else {
-            addCategoryButton.style.display = 'block';
         }
     }
 
@@ -205,7 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         const deleteButton = rewardDiv.querySelector('.delete-reward');
-        deleteButton.addEventListener('click', () => {
+        deleteButton.addEventListener('click', (e) => {
+            createClickEffect(e, deleteButton);
             if (confirm('Voulez-vous vraiment supprimer cette récompense ?')) {
                 rewards = rewards.filter(r => r.id !== reward.id);
                 rewardDiv.remove();
@@ -214,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const claimButton = rewardDiv.querySelector('.claim-reward');
-        claimButton.addEventListener('click', () => {
+        claimButton.addEventListener('click', (e) => {
+            createClickEffect(e, claimButton);
             if (score >= reward.points && !claimedRewards.has(reward.id)) {
                 claimedRewards.add(reward.id);
                 claimButton.disabled = true;
@@ -249,7 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Ajout de récompense
-    addRewardButton.addEventListener('click', () => {
+    addRewardButton.addEventListener('click', (e) => {
+        createClickEffect(e, addRewardButton);
         const name = prompt('Nom de la récompense :');
         if (!name || name.trim() === '') return;
 
@@ -271,7 +296,36 @@ document.addEventListener('DOMContentLoaded', () => {
         updateRewardButtons();
     });
 
-    // Chargement initial des données
+    // Gestion des thèmes
+    themePresets.forEach(button => {
+        button.addEventListener('click', (e) => {
+            createClickEffect(e, button);
+            const theme = button.dataset.theme;
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('gameTheme', JSON.stringify({ preset: theme }));
+        });
+    });
+
+    // Gestion des couleurs personnalisées
+    Object.entries(colorInputs).forEach(([key, input]) => {
+        input.addEventListener('change', () => {
+            const colors = {
+                backgroundColor: colorInputs.backgroundColor.value,
+                textColor: colorInputs.textColor.value,
+                buttonColor: colorInputs.buttonColor.value,
+                goButtonColor: colorInputs.goButtonColor.value
+            };
+
+            document.documentElement.style.setProperty('--background-color', colors.backgroundColor);
+            document.documentElement.style.setProperty('--text-color', colors.textColor);
+            document.documentElement.style.setProperty('--button-color', colors.buttonColor);
+            document.documentElement.style.setProperty('--go-button-color', colors.goButtonColor);
+
+            localStorage.setItem('gameTheme', JSON.stringify({ custom: colors }));
+        });
+    });
+
+    // Chargement initial
     loadCategories();
     loadRewards();
 

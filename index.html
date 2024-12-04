@@ -9,6 +9,7 @@
 <body>
     <div id="score-container">
         <div id="score">Score: <span id="score-value">0</span> points</div>
+        <button id="reset-score" class="reset-btn">Reset</button>
     </div>
 
     <div id="theme-button" class="theme-toggle">
@@ -24,6 +25,10 @@
                 <button class="theme-preset" data-theme="light">Clair</button>
                 <button class="theme-preset" data-theme="neon">Néon</button>
                 <button class="theme-preset" data-theme="nature">Nature</button>
+                <button class="theme-preset" data-theme="sunset">Coucher de soleil</button>
+                <button class="theme-preset" data-theme="ocean">Océan</button>
+                <button class="theme-preset" data-theme="purple">Violet</button>
+                <button class="theme-preset" data-theme="coffee">Café</button>
             </div>
         </div>
         <div class="theme-section">
@@ -64,7 +69,9 @@
                 <button id="rewards-button" class="nav-btn">Récompenses</button>
             </div>
             <div class="categories">
-                <!-- Les catégories seront ajoutées ici dynamiquement -->
+                <button class="category-btn" data-points="1">Codage</button>
+                <button class="category-btn" data-points="1">Business</button>
+                <button class="category-btn" data-points="1">Santé</button>
             </div>
         </div>
 
@@ -79,6 +86,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Conteneur pour l'animation +1 -->
+    <div id="points-animation-container"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
